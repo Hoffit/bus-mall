@@ -1,155 +1,172 @@
 'use strict';
 /**
- * This program is created as a part of a training exercise. The program projects hourly sales
- * at several retail locations for a hypothetical Salmon Cookie shop business.
+ * This program is created as a part of a training exercise. It's Bus Mall, and
+ * tracks and shares information about user clicks on product images.
+ * Each iteration displays 3 distint products for the user to select from.
  */
 
-//The locations for which to report sales figures
-var cookieShopLocations = [];
+//The set of products from which the user can view and select
+var product = [];
 
-//Create a totals array for each hour stores are open
-//Initialize with zeroes otherise result is NAN later
-var hourlySalesTotal = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+//The number of clicks required to complete the survey
+var numberOfRequiredProductSelections = 25;
 
-//Get the DOM table object to populate with location sales information.
-var cookieShopLocationTable = document.getElementById('CookieShopSalesTable');
+//The current click count
+var clickCount = 0;
 
-//Get the DOM form object to support user addition of new store locations
-var newLocationForm = document.getElementById('store-sales-form');
+//The set of three products currently displayed
+var currentlyDisplayedProductIndex = [];
+
+//The set of three products previously displayed.
+var previouslyDisplayedProductIndex = [];
+
+//Get the DOM section object where the product choices are displayed
+var productChoicePanel = document.getElementById('product-choices');
+
+//Get the DOM section object where the results of this survey should display
+var surveyResultPanel = document.getElementById('survey-result');
 
 /**
- * Cookie Shop Object with constructor and methods.
- *
+ * Product Object with constructor and methods.
  */
-function CookieShop(locationName, minCustomersPerHour, maxCustomersPerHour, averageCookiesPerCustomer) {
-  this.locationName = locationName;
-  this.minCustomersPerHour = minCustomersPerHour;
-  this.maxCustomersPerHour = maxCustomersPerHour;
-  this.averageCookiesPerCustomer = averageCookiesPerCustomer;
-  this.openingTime = '0600';
-  this.closingTime = '2100';
-  this.hourlyProjections = [];
-  this.totalCookiesPerDay = 0;
-  this.calculateCookiesPerHour();
-  cookieShopLocations.push(this);
+function Product(productName, productImagePath) {
+  this.productName = productName;
+  this.productImagePath = productImagePath;
+  this.displayCount = 0;
+  this.selectCount = 0;
 }
 
-//Simulate real sales data using random number of customers in a range.
-CookieShop.prototype.calculateCustomersPerHour = function() {
-  return Math.floor(Math.random() * (this.maxCustomersPerHour - this.minCustomersPerHour)) + this.minCustomersPerHour;
+/**
+ * Increment the product display count
+ */
+Product.prototype.incrementDisplayCount = function () {
+  this.displayCount++;
 };
 
-//Use the simulated customer data from calculateCustomersPerHour to create hourly sales projections.
-CookieShop.prototype.calculateCookiesPerHour = function() {
-  var hoursOpen = (this.closingTime-this.openingTime)/100;
-  for(var i=0; i<hoursOpen; i++) {
-    this.hourlyProjections[i] = this.calculateCustomersPerHour();
-    this.totalCookiesPerDay += this.hourlyProjections[i];
-  }
+/**
+ * Increment the product select count
+ */
+Product.prototype.incrementSelectCount = function () {
+  this.selectCount++;
 };
 
-//Create the table header, one column for each hour of shop data.
-CookieShop.renderHeader = function () {
-  var headerRow = document.createElement('tr');
-  var headings = ['', '6:00am','7:00am','8:00a,','9:00am', '10:00am', '11:00', '12:00pm',
-    '1:00pm', '2:00pm', '3:00pm', '4:00pm', '5:00pm', '6:00pm', '7:00pm', '8:00pm', 'Total'];
-  for(var i=0; i<headings.length; i++) {
-    var thElement = document.createElement('th');// 1. create th elements
-    thElement.textContent = headings[i];// 2. fill in their content
-    headerRow.appendChild(thElement);// 3. append th to headerRow
-    cookieShopLocationTable.appendChild(headerRow);
-  }
-};
-
-//Enable shop instance to populate table row with their hourly sales projections
-CookieShop.prototype.renderRow = function() {
-
-  var trElement = document.createElement('tr');// create tr
-
-  //Populate first cell in row with shop name
-  var tdElement = document.createElement('td');// create td
-
-  tdElement.textContent = this.locationName;// give td content
-  trElement.appendChild(tdElement);// append td to tr
-
-  //Now loop through each hour and populate the cell with sales projection
-  var hoursOpen = (this.closingTime-this.openingTime)/100;
-  for(var i=0; i<hoursOpen; i++) {
-    tdElement = document.createElement('td');
-    tdElement.textContent = this.hourlyProjections[i];
-    trElement.appendChild(tdElement);
-  }
-
-  //Add the location total as the last td/cell in the row
-  tdElement = document.createElement('td');
-  tdElement.textContent = this.totalCookiesPerDay;
-  trElement.appendChild(tdElement);
-
-  //Finally - add the newly populated row to the table.
-  cookieShopLocationTable.appendChild(trElement);
-};
-
-//Enable shop instance to populate table row with their hourly sales projections
-CookieShop.renderFooter = function() {
-  var trElement = document.createElement('tr');// create tr
-  var tdElement = document.createElement('td');// create td
-  tdElement.textContent = 'Total';// give td content
-  trElement.appendChild(tdElement);// append td to tr
-  //Loop through the 15 hours of open time, and populate sums
-  for(var i=0; i<hourlySalesTotal.length; i++) {
-    tdElement = document.createElement('td');
-    tdElement.textContent = hourlySalesTotal[i];
-    trElement.appendChild(tdElement);
-  }
-  cookieShopLocationTable.appendChild(trElement);
-};
-
-//Convenience method to loop through and render all the shops sales data.
-CookieShop.renderAllShops = function() {
-  for(var i=0; i<cookieShopLocations.length; i++) {
-    cookieShopLocations[i].renderRow();
-  }
-};
-
-//Build out hourly totals array for table footer
-CookieShop.calculateHourlyTotals = function() {
-  for(var i=0; i<cookieShopLocations.length; i++) {
-    var aCookieShop = cookieShopLocations[i];
-    var numberOfHourlyProjections = aCookieShop.hourlyProjections.length;
-    console.log(aCookieShop);
-    for(var j=0; j<numberOfHourlyProjections; j++) {
-      hourlySalesTotal[j] += aCookieShop.hourlyProjections[j];
+/**
+ * Randomly chooses 3 distinct product instances, which were not selected
+ * in the immediate prior iteration.
+ * Hard coded to 3 products at a time for this exercise.
+ */
+function selectNextProductSet() {
+  //move current product set to previous (hard code size 3)
+  previouslyDisplayedProductIndex[0] = currentlyDisplayedProductIndex.pop();
+  previouslyDisplayedProductIndex[1] = currentlyDisplayedProductIndex.pop();
+  previouslyDisplayedProductIndex[2] = currentlyDisplayedProductIndex.pop();
+  do {
+    var aRandomArrayIndex = Math.floor(Math.random() * product.length);//random product
+    if (!previouslyDisplayedProductIndex.includes(aRandomArrayIndex) &&
+      !currentlyDisplayedProductIndex.includes(aRandomArrayIndex)) {
+      currentlyDisplayedProductIndex.push(aRandomArrayIndex);
     }
-  }
-};
+  } while (currentlyDisplayedProductIndex.length < 3);
+}
 
-// Callback function for when the form is submitted
-CookieShop.addNewCookieShop = function(event) {
-  // always put this first, it will prevent the default behavior of the browser, which is to refresh the page when the form is submitted
+//Enable shop instance to populate table row with their hourly sales projections
+function rendorProductChoice() {
+
+  //Have the the instances to be displayed, update their display count
+  product[currentlyDisplayedProductIndex[0]].incrementDisplayCount();
+  product[currentlyDisplayedProductIndex[1]].incrementDisplayCount();
+  product[currentlyDisplayedProductIndex[2]].incrementDisplayCount();
+
+  //Place the 3 product images in the product choice panel
+  document.getElementById('first-product').setAttribute('src', product[currentlyDisplayedProductIndex[0]].productImagePath);
+  document.getElementById('second-product').setAttribute('src', product[currentlyDisplayedProductIndex[1]].productImagePath);
+  document.getElementById('third-product').setAttribute('src', product[currentlyDisplayedProductIndex[2]].productImagePath);
+}
+
+/**
+ * Convenience method to initialize product array with instances.
+ */
+function initializeProductSet() {
+  product.push(new Product('bag', '../img/bag.jpg'));
+  product.push(new Product('banana', '../img/banana.jpg'));
+  product.push(new Product('bathroom', '../img/bathroom.jpg'));
+  product.push(new Product('boots', '../img/boots.jpg'));
+  product.push(new Product('breakfast', '../img/breakfast.jpg'));
+  product.push(new Product('bubblegum', '../img/bubblegum.jpg'));
+  product.push(new Product('chair', '../img/chair.jpg'));
+  product.push(new Product('cthulhu', '../img/cthulhu.jpg'));
+  product.push(new Product('dog-duck', '../img/dog-duck.jpg'));
+  product.push(new Product('dragon', '../img/dragon.jpg'));
+  product.push(new Product('pen', '../img/pen.jpg'));
+  product.push(new Product('pet-sweep', '../img/pet-sweep.jpg'));
+  product.push(new Product('scissors', '../img/scissors.jpg'));
+  product.push(new Product('shark', '../img/shark.jpg'));
+  product.push(new Product('sweep', '../img/sweep.png'));
+  product.push(new Product('tauntaun', '../img/tauntaun.jpg'));
+  product.push(new Product('unicorn', '../img/unicorn.jpg'));
+  product.push(new Product('usb', '../img/usb.gif'));
+  product.push(new Product('water-can', '../img/water-can.jpg'));
+  product.push(new Product('wine-glass', '../img/wine-glass.jpg'));
+}
+
+function processUserProductChoice(event) {
+  // always put this first, it will prevent the default behavior of the browser,
+  //which is to refresh the page when the form is submitted
   event.preventDefault();
-  var newLocationName = event.target.locationName.value;
-  var newMinCustomersPerHour = parseInt(event.target.minCustomersPerHour.value);
-  var newMaxCustomersPerHour = parseInt(event.target.maxCustomersPerHour.value);
-  var newAverageCookiesPerCustomer = parseFloat(event.target.averageCookiesPerCustomer.value);
 
-  var newCookieShop = new CookieShop(newLocationName, newMinCustomersPerHour, newMaxCustomersPerHour, newAverageCookiesPerCustomer);
-  hourlySalesTotal.push(0);
-  console.log(newCookieShop);
-  newCookieShop.renderRow();
-};
+  //Determine which product was selected
+  clickCount++;
+  var selectedProductImageId = event.target.id;
+  var index = -1;
+  if (selectedProductImageId === 'first-product') {
+    index = 0;
+  }
+  else if (selectedProductImageId === 'second-product') {
+    index = 1;
+  }
+  else if (selectedProductImageId === 'third-product') {
+    index = 2;
+  }
 
-//Instantiate five cookie shop objects.
-new CookieShop('1st and Pike', 23, 65, 6.3);
-new CookieShop('SeaTac Airport', 3, 24, 1.2);
-new CookieShop('Seattle Center', 11, 38, 3.7);
-new CookieShop('Capitol Hill', 20, 38, 2.3);
-new CookieShop('Alki', 2, 16, 4.6);
+  //tell the instance to update itself
+  product[currentlyDisplayedProductIndex[index]].incrementSelectCount();
 
-// Add the event listener to the form
-newLocationForm.addEventListener('submit', CookieShop.addNewCookieShop);
+  //Until required number of selections has occured, determine next display
+  //set and show to user
+  if (clickCount < numberOfRequiredProductSelections) {
+    selectNextProductSet();
+    rendorProductChoice();
+  }
+  else {//stop listening for event and show results
+    productChoicePanel.removeEventListener('click', processUserProductChoice);
+    renderProductSurveyResults();
+  }
+}
 
-//Render the sales data table
-CookieShop.renderHeader();
-CookieShop.renderAllShops();
-CookieShop.calculateHourlyTotals();
-CookieShop.renderFooter();
+//Render the results
+function renderProductSurveyResults() {
+
+  var ulElement = document.createElement('ul');//the result ul
+
+  for (var i = 0; i < product.length; i++) {
+    var liElement = document.createElement('li');
+    liElement.textContent = product[i].productName + ': ' + product[i].selectCount + ' votes' +
+      ' | ' + product[i].displayCount + ' displays';
+    ulElement.appendChild(liElement);
+  }
+
+  //finally - add the new ul to the result panel
+  surveyResultPanel.appendChild(ulElement);
+}
+
+// Add the event listener to the image panel
+productChoicePanel.addEventListener('click', processUserProductChoice);
+
+//Instantiate product objects
+initializeProductSet();
+
+//Initialize first set of 3 products to display
+selectNextProductSet();
+
+//Render the initial set of products for the user to view/choose
+rendorProductChoice();
