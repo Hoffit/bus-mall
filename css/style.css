@@ -1,5 +1,5 @@
 .brand-logo {
-  margin: 10px 0px;
+  margin: 10px 60px 10px 0px;
 }
 
 nav {
@@ -14,7 +14,7 @@ nav ul {
 
 nav li {
   display: inline-block;
-  margin: 0px 40px 0px 0px;
+  margin: 0px 50px 0px 0px;
   vertical-align: middle;
 }
 
@@ -34,21 +34,40 @@ main {
 }
 
 #first-product, #second-product, #third-product {
-  width: 315px;
+  height: 150px;
+  border: solid;
 }
 
 .left-content-panel {
   margin: 0px 30px 0px 0px;
 }
 
+h1 {
+  font-weight: bold;
+  margin-bottom: 0.5em;
+  font-size: x-large;
+}
+
+p {
+  margin-bottom: 0.5em;
+  font-size: medium;
+}
+
 h3 {
   font-weight: bold;
   margin-bottom: 1em;
+  font-size: medium;
 }
 
 .center-panel {
   margin: 30px 0px;
   text-align: center;
+  border: solid;
+}
+
+#product-choices {
+  text-align: center;
+  margin: 30px auto;
 }
 
 footer {
