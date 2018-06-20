@@ -24,7 +24,7 @@ var previouslyDisplayedProductIndex = [];
 var productChoicePanel = document.getElementById('product-choices');
 
 //Get the DOM section object where the results of this survey should display
-var surveyResultPanel = document.getElementById('survey-result');
+var surveyResultCanvas = document.getElementById('survey-result');
 
 /**
  * Product Object with constructor and methods.
@@ -143,20 +143,53 @@ function processUserProductChoice(event) {
   }
 }
 
-//Render the results
+//Render the results using chart js
 function renderProductSurveyResults() {
 
-  var ulElement = document.createElement('ul');//the result ul
-
-  for (var i = 0; i < product.length; i++) {
-    var liElement = document.createElement('li');
-    liElement.textContent = product[i].productName + ': ' + product[i].selectCount + ' votes' +
-      ' | ' + product[i].displayCount + ' displays';
-    ulElement.appendChild(liElement);
+  //Create the label and data sets for the chart, based on our product instance data
+  var labels = [];
+  var votes = [];
+  for(var i=0; i<product.length; i++) {
+    labels.push(product[i].productName);
+    votes.push(product[i].selectCount);
   }
 
-  //finally - add the new ul to the result panel
-  surveyResultPanel.appendChild(ulElement);
+  var productSurveyResultChart = new Chart(surveyResultCanvas, { // eslint-disable-line
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Product Votes',
+        data: votes,
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(255, 206, 86, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(255, 159, 64, 0.2)'
+        ],
+        borderColor: [
+          'rgba(255,99,132,1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  });
 }
 
 // Add the event listener to the image panel
