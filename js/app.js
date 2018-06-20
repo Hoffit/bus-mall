@@ -87,26 +87,26 @@ function rendorProductChoice() {
  * Convenience method to initialize product array with instances.
  */
 function initializeProductSet() {
-  product.push(new Product('bag', '../img/bag.jpg'));
-  product.push(new Product('banana', '../img/banana.jpg'));
-  product.push(new Product('bathroom', '../img/bathroom.jpg'));
-  product.push(new Product('boots', '../img/boots.jpg'));
-  product.push(new Product('breakfast', '../img/breakfast.jpg'));
-  product.push(new Product('bubblegum', '../img/bubblegum.jpg'));
-  product.push(new Product('chair', '../img/chair.jpg'));
-  product.push(new Product('cthulhu', '../img/cthulhu.jpg'));
-  product.push(new Product('dog-duck', '../img/dog-duck.jpg'));
-  product.push(new Product('dragon', '../img/dragon.jpg'));
-  product.push(new Product('pen', '../img/pen.jpg'));
-  product.push(new Product('pet-sweep', '../img/pet-sweep.jpg'));
-  product.push(new Product('scissors', '../img/scissors.jpg'));
-  product.push(new Product('shark', '../img/shark.jpg'));
-  product.push(new Product('sweep', '../img/sweep.png'));
-  product.push(new Product('tauntaun', '../img/tauntaun.jpg'));
-  product.push(new Product('unicorn', '../img/unicorn.jpg'));
-  product.push(new Product('usb', '../img/usb.gif'));
-  product.push(new Product('water-can', '../img/water-can.jpg'));
-  product.push(new Product('wine-glass', '../img/wine-glass.jpg'));
+  product.push(new Product('bag', 'img/bag.jpg'));
+  product.push(new Product('banana', 'img/banana.jpg'));
+  product.push(new Product('bathroom', 'img/bathroom.jpg'));
+  product.push(new Product('boots', 'img/boots.jpg'));
+  product.push(new Product('breakfast', 'img/breakfast.jpg'));
+  product.push(new Product('bubblegum', 'img/bubblegum.jpg'));
+  product.push(new Product('chair', 'img/chair.jpg'));
+  product.push(new Product('cthulhu', 'img/cthulhu.jpg'));
+  product.push(new Product('dog-duck', 'img/dog-duck.jpg'));
+  product.push(new Product('dragon', 'img/dragon.jpg'));
+  product.push(new Product('pen', 'img/pen.jpg'));
+  product.push(new Product('pet-sweep', 'img/pet-sweep.jpg'));
+  product.push(new Product('scissors', 'img/scissors.jpg'));
+  product.push(new Product('shark', 'img/shark.jpg'));
+  product.push(new Product('sweep', 'img/sweep.png'));
+  product.push(new Product('tauntaun', 'img/tauntaun.jpg'));
+  product.push(new Product('unicorn', 'img/unicorn.jpg'));
+  product.push(new Product('usb', 'img/usb.gif'));
+  product.push(new Product('water-can', 'img/water-can.jpg'));
+  product.push(new Product('wine-glass', 'img/wine-glass.jpg'));
 }
 
 function processUserProductChoice(event) {
@@ -166,6 +166,20 @@ function renderProductSurveyResults() {
           'rgba(54, 162, 235, 0.2)',
           'rgba(255, 206, 86, 0.2)',
           'rgba(75, 192, 192, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(255, 159, 64, 0.2)',
+          'rgba(50, 159, 64, 0.2)',
+          'rgba(128, 165, 99, 0.2)',
+          'rgba(000, 111, 222, 0.2)',
+          'rgba(75, 111, 192, 0.2)',
+          'rgba(153, 255, 255, 0.2)',
+          'rgba(255, 159, 233, 0.2)',
+          'rgba(255, 99, 255, 0.2)',
+          'rgba(56, 162, 235, 0.2)',
+          'rgba(111, 206, 86, 0.2)',
+          'rgba(175, 192, 192, 0.2)',
+          'rgba(200, 102, 200, 0.2)',
+          'rgba(255, 159, 64, 0.2)',
           'rgba(153, 102, 255, 0.2)',
           'rgba(255, 159, 64, 0.2)'
         ],
