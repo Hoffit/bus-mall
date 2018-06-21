@@ -2,7 +2,10 @@
 /**
  * This program is created as a part of a training exercise. It's Bus Mall, and
  * tracks and shares information about user clicks on product images.
- * Each iteration displays 3 distint products for the user to select from.
+ * Each iteration displays 3 distinct products for the user to select from.
+ *
+ * It also uses the browsers HTML 5 local storage capability to persist prior
+ * session results.
  */
 
 //The set of products from which the user can view and select
@@ -56,7 +59,7 @@ Product.prototype.incrementSelectCount = function () {
  * Hard coded to 3 products at a time for this exercise.
  */
 function selectNextProductSet() {
-  //move current product set to previous (hard code size 3)
+  //move current product set to previous
   previouslyDisplayedProductIndex[0] = currentlyDisplayedProductIndex.pop();
   previouslyDisplayedProductIndex[1] = currentlyDisplayedProductIndex.pop();
   previouslyDisplayedProductIndex[2] = currentlyDisplayedProductIndex.pop();
@@ -69,7 +72,7 @@ function selectNextProductSet() {
   } while (currentlyDisplayedProductIndex.length < 3);
 }
 
-//Enable shop instance to populate table row with their hourly sales projections
+//Display the set of three products for the user to view and select
 function rendorProductChoice() {
 
   //Have the the instances to be displayed, update their display count
@@ -114,8 +117,9 @@ function processUserProductChoice(event) {
   //which is to refresh the page when the form is submitted
   event.preventDefault();
 
-  //Determine which product was selected
   clickCount++;
+
+  //Determine which product was selected
   var selectedProductImageId = event.target.id;
   var index = -1;
   if (selectedProductImageId === 'first-product') {
@@ -128,7 +132,7 @@ function processUserProductChoice(event) {
     index = 2;
   }
 
-  //tell the instance to update itself
+  //tell the instance to update its select count
   product[currentlyDisplayedProductIndex[index]].incrementSelectCount();
 
   //Until required number of selections has occured, determine next display
@@ -140,6 +144,7 @@ function processUserProductChoice(event) {
   else {//stop listening for event and show results
     productChoicePanel.removeEventListener('click', processUserProductChoice);
     renderProductSurveyResults();
+    saveResultsToLocalStorage();
   }
 }
 
@@ -183,14 +188,7 @@ function renderProductSurveyResults() {
           'rgba(153, 102, 255, 0.2)',
           'rgba(255, 159, 64, 0.2)'
         ],
-        borderColor: [
-          'rgba(255,99,132,1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)'
-        ],
+        borderColor: ['rgba(255,99,132,1)'],
         borderWidth: 1
       }]
     },
@@ -206,11 +204,33 @@ function renderProductSurveyResults() {
   });
 }
 
+/**
+ * Use the browsers HTML 5 local storage capability to save or recover the users product pref data.
+ */
+function saveResultsToLocalStorage() {
+  localStorage.setItem('bus-mall-product-choices', JSON.stringify(product));
+}
+
+function loadResultsFromStorage() {
+  var priorProductSurveyResult = JSON.parse( localStorage.getItem('bus-mall-product-choices') );
+  if(priorProductSurveyResult !== null) {
+    for(var i=0; i<priorProductSurveyResult.length; i++) {
+      product[i].displayCount += priorProductSurveyResult[i].displayCount;
+      product[i].selectCount += priorProductSurveyResult[i].selectCount;
+    }
+  }
+}
+
 // Add the event listener to the image panel
 productChoicePanel.addEventListener('click', processUserProductChoice);
 
 //Instantiate product objects
 initializeProductSet();
+
+//Update those product objects just created, with prior results for
+//display count and select count properties, in cases where the user
+//has prior sessions that we persisted using HTML local storage.
+loadResultsFromStorage();
 
 //Initialize first set of 3 products to display
 selectNextProductSet();
